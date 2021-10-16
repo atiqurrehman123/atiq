@@ -1,0 +1,24 @@
+{
+  "contacts": [
+    {
+      "id": "b8106b31-2d40-4bb1-9a68-67dcf8592b6f",
+      "name": "ede",
+      "email": "badshahbhai336@gmail.com"
+    },
+    {
+      "id": "1986f5d6-1588-4f3b-be6b-2c71d5ef0831",
+      "name": "ede",
+      "email": "badshahbhai336@yahoo.com"
+    },
+    {
+      "id": "0bffad66-a8cb-464a-ad07-5ea9a5635aca",
+      "name": "Atiq",
+      "email": "atif123@gmail.com"
+    },
+    {
+      "id": "6860970e-3765-4dcf-8b31-eca519654614",
+      "name": "ob",
+      "email": "ob@gmail.com"
+    }
+  ]
+}
