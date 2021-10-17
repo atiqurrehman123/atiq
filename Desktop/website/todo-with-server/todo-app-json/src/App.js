@@ -1,5 +1,5 @@
 import './App.css';
-import { useState,useEffect } from 'react';
+import { useState,useEffect, useRef } from 'react';
 import { BrowserRouter as Router,Switch, Route} from 'react-router-dom';
 import {uuid} from 'uuidv4'
 import Header from'./components/Header';
@@ -7,10 +7,30 @@ import AddContact from './components/AddContact';
 import ContactList from './components/ContactList';
 import ContactDetails from './components/ContactDetails';
 import api from "./api/contacts"
-
+import EditContact from './components/EditContact';
 function App(props) {
   const LOCA_STORAGE_KEY="contacts";
   const [contacts, setcontacts] = useState([])
+  const [searchTerm,setSearchTerm]=useState("");
+  const [searchResults,setsearchResult]=useState([])
+ 
+  // searchcontacthandler
+  const searchcontacthandler=(contactvalues)=>{
+    console.log(contactvalues)
+    setSearchTerm(contactvalues)
+    if(searchTerm !==""){
+      const newContactList=contacts.filter(contact=>{
+      return Object.values(contact).join(" ").toLowerCase().includes(contactvalues.toLowerCase())
+      })
+      setsearchResult(newContactList)
+    }else{
+      setsearchResult(contacts)
+    }
+
+
+    
+
+  }
   // retirvive contact
   const retrivecontact= async ()=>{
     const response=await api.get("contacts")
@@ -29,13 +49,24 @@ function App(props) {
     setcontacts([...contacts, response.data])
   }
     //for retriving data
-    const removeContact=(id)=>{
+    const removeContact=async(id)=>{
+      // removing data from app with id
+     await api.delete(`contacts/${id}`)
       const copycontact=contacts.filter(contact=>{
         return contact.id !== id;
       }
-
         )
         setcontacts(copycontact)
+
+    }
+    // eidt contact handler
+    const editContactHandler=async (contact)=>{
+
+      const response=await api.put(`contacts/${contact.id}`,contact)
+      const{id,name,email}=response.data;
+      setcontacts(contacts.map(contact=>{
+        return contact.id ===id ?{...response.data}:contact;
+      }))
 
     }
   useEffect( async()=>{
@@ -60,8 +91,11 @@ function App(props) {
       {/* switch use for match */}
       <Switch>
         {/* WHEN WE NOT USE exact it only render / path not other for that use exact with */}
-      <Route path="/" exact render={(props)=>( <ContactList {...props} contacts={contacts} removeContact={removeContact}/> )}/>
+      <Route path="/" exact render={(props)=>( <ContactList {...props} contacts={searchTerm.length<1? contacts : searchResults} removeContact={removeContact} term={searchTerm} 
+     searchcontacthandler={searchcontacthandler} />  )}/>
       <Route path={"/add"}  render={(props)=>(<AddContact {...props} addContactHandler={addContactHandler}/>)}/>
+      <Route path={"/edit"}  render={(props)=>(<EditContact {...props} editContactHandler={editContactHandler}/>)}/>
+
       <Route path={"/contactdetails:id"} component={ContactDetails}/> 
       </Switch>
       
